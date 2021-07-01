@@ -1,0 +1,14 @@
+<svg width="300" height="336" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <g stroke="null" id="svg_13">
+   <rect stroke="#000" fill="#fff" x="49" y="27" width="201" height="64.90385" id="svg_1"/>
+   <rect stroke="#000" fill="#fff" x="49" y="91.90384" width="201" height="64.90385" id="svg_7"/>
+   <rect stroke="#000" fill="#fff" x="49" y="156.80769" width="201" height="140.19231" id="svg_8"/>
+   <text stroke="#000" fill="#000000" x="94.48644" y="177.03851" id="svg_9" stroke-width="0" font-size="24" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve" transform="matrix(1.07486 0 0 1.29808 18.3808 2.28665)">CODE</text>
+   <text stroke="#000" fill="#000000" x="51.48644" y="101.03851" id="svg_10" stroke-width="0" font-size="24" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve" transform="matrix(1.07486 0 0 1.29808 18.3808 2.28665)">GNU Build ID</text>
+   <text stroke="#000" fill="#000000" x="57.48644" y="51.03851" id="svg_11" stroke-width="0" font-size="24" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve" transform="matrix(1.07486 0 0 1.29808 18.3808 2.28665)">Image Header</text>
+  </g>
+ </g>
+
+</svg>
