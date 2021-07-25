@@ -14,11 +14,11 @@ find_package(Python REQUIRED)
 set(IMAGE_PATCH_SCRIPT_PATH ${WAV_BUILD_TOP_LEVEL}/scripts/patch_image_header.py)
 
 # Create a macro that can patch image after its built
-macro(patch_image_header target prefix)
-    add_custom_command(TARGET ${target}
+macro(patch_image_header TARGET PREFIX WORKING_DIRECTORY)
+    add_custom_command(TARGET ${TARGET}
         POST_BUILD
-        COMMAND ${Python_EXECUTABLE} ${IMAGE_PATCH_SCRIPT_PATH} ${target} --prefix ${prefix}
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        COMMAND ${Python_EXECUTABLE} ${IMAGE_PATCH_SCRIPT_PATH} ${TARGET} --prefix ${PREFIX}
+        WORKING_DIRECTORY ${WORKING_DIRECTORY}
     )
 endmacro()
 

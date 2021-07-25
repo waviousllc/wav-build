@@ -58,6 +58,7 @@ def main(elf_filename, prefix):
     """
     OBJCOPY = "objcopy"
     GDB = "gdb"
+    TMP_FILENAME = elf_filename + ".tmp.bin"
 
     if prefix:
         OBJCOPY = "{}-{}".format(prefix, OBJCOPY)
@@ -66,13 +67,16 @@ def main(elf_filename, prefix):
     with open(os.devnull, 'w') as devnull:
 
         # Create binary file
-        subprocess.call([OBJCOPY, elf_filename, "-O", "binary", "tmp.bin"], shell=False, stderr=devnull, stdout=devnull)
+        subprocess.call([OBJCOPY, elf_filename, "-O", "binary", TMP_FILENAME],
+                        shell=False,
+                        stderr=devnull,
+                        stdout=devnull)
 
         # Process file
-        data_size, crc32 = process_binary_payload("tmp.bin")
+        data_size, crc32 = process_binary_payload(TMP_FILENAME)
 
         # Delete file
-        os.remove("tmp.bin")
+        os.remove(TMP_FILENAME)
 
         # Patch elf file
         subprocess.call([
