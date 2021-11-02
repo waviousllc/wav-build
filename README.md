@@ -44,6 +44,7 @@ be declared so that the header is placed in the correct location in the image.
 Otherwise, the linker would place the header in a indeterminent location that
 would be unqiue for every build. An example is provided below.
 ~~~
+extern uintptr_t __start;
 img_hdr_t image_hdr __attribute__((section(".image_hdr"))) = {
     .image_magic = IMAGE_MAGIC,
     .image_hdr_version = IMAGE_VERSION_CURRENT,
@@ -51,8 +52,9 @@ img_hdr_t image_hdr __attribute__((section(".image_hdr"))) = {
     .version_major = FW_VERSION_MAJOR,
     .version_minor = FW_VERSION_MINOR,
     .version_patch = FW_VERSION_PATCH,
-    .vector_addr = (uint32_t) &__start,
     .device_id = IMAGE_DEVICE_ID_HOST,
+    .vector_size = VECTOR_SIZE,
+    .vector_addr =  &__start,
     .git_dirty = GIT_DIRTY,
     .git_ahead = GIT_AHEAD,
     .git_sha = GIT_SHA,
@@ -116,3 +118,25 @@ that include the header.
 ### Scripts
 This includes supporting scripts for patching image header, and parsing out
 raw header information (image header, GNU build ID) from compatible binaries.
+
+## Tools
+### Precommit
+pre-commit is a tool that simplifies the process of creating and sharing
+githooks for a development team. pre-commit offers an extensive set of plugins
+that can be used for various projects. The hooks (aka scripts) that will run
+prior to each commit are defined by `.pre-commit-config.yaml` file located in
+the root of this project. All software based projects at Wavious include
+`wav-build` as a project and thus use pre-commit.
+
+#### Installation
+pre-commit can be installed using pip `pip install pre-commit`
+install pre-commit for your project
+`pre-commit install <PATH_TO_WAV_BUILD>/.pre-commit-config.yaml` where
+`<PATH_TO_WAV_BUILD>` is the full path to this project (remember that this
+project is a submodule for all Wavious software projects).
+
+#### Execution
+pre-commit runs whenever `git commit` is executed. However, it can be run
+manually via `pre-commit run --all-files`.
+
+[Documentation](https://pre-commit.com)
