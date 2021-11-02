@@ -44,6 +44,7 @@ be declared so that the header is placed in the correct location in the image.
 Otherwise, the linker would place the header in a indeterminent location that
 would be unqiue for every build. An example is provided below.
 ~~~
+extern uintptr_t __start;
 img_hdr_t image_hdr __attribute__((section(".image_hdr"))) = {
     .image_magic = IMAGE_MAGIC,
     .image_hdr_version = IMAGE_VERSION_CURRENT,
@@ -51,8 +52,9 @@ img_hdr_t image_hdr __attribute__((section(".image_hdr"))) = {
     .version_major = FW_VERSION_MAJOR,
     .version_minor = FW_VERSION_MINOR,
     .version_patch = FW_VERSION_PATCH,
-    .vector_addr = (uint32_t) &__start,
     .device_id = IMAGE_DEVICE_ID_HOST,
+    .vector_size = VECTOR_SIZE,
+    .vector_addr =  &__start,
     .git_dirty = GIT_DIRTY,
     .git_ahead = GIT_AHEAD,
     .git_sha = GIT_SHA,
