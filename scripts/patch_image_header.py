@@ -21,12 +21,13 @@ def process_binary_payload(bin_filename):
 
     Raise exception if binary is not a supported type
     """
-    IMAGE_HDR_SIZE_BYTES = 32
+    IMAGE_HDR_SIZE_FIXED_BYTES = 19 # Fixed starting 19 bytes
+    IMAGE_HDR_SIZE_GIT_BYTES = 10   # Trailing 10 bytes
     IMAGE_HDR_MAGIC = 0xC0FE
     IMAGE_HDR_VERSION = 1
 
     with open(bin_filename, "rb") as f:
-        image_hdr = f.read(IMAGE_HDR_SIZE_BYTES)
+        image_hdr = f.read(IMAGE_HDR_SIZE_FIXED_BYTES)
         data = f.read()
 
     image_magic, image_hdr_version = struct.unpack("<HH", image_hdr[0:4])
@@ -45,6 +46,18 @@ def process_binary_payload(bin_filename):
             )
         )
 
+    # Determine full header size based on vector_size
+    vector_size = struct.unpack("<B", image_hdr[-1])
+
+    if (vector_size != 0x4 or vector_size != 0x8):
+        raise Exception(
+            "Vector Size is incorrect. Expected 0x4 or 0x8. Got 0x{:02x}".format(
+                vector_size
+            )
+        )
+
+    # Chop off data based on vector_size + fixed git header size
+    data = data[vector_size + IMAGE_HDR_SIZE_GIT_BYTES::]
     data_size = len(data)
     crc32 = binascii.crc32(data) & 0xffffffff
     return data_size, crc32

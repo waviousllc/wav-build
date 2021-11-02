@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #define IMAGE_MAGIC (0xC0FE)
+#define VECTOR_SIZE (sizeof(uintptr_t))
 
 /**
  * @brief   Image Type Enumeration
@@ -82,9 +83,10 @@ typedef enum
  * version_major        Major version of the image.
  * version_minor        Minor version of the image.
  * version_patch        Patch version of the image.
- * vector_addr          Start address of where image expects to begin execution.
  * device_id            The identifier of the device that can execute this
  *                      image.
+ * vector_size          Size of the vector address field (4 for 32-bit; 8 for 64-bit).
+ * vector_addr          Start address of where image expects to begin execution.
  * git_dirty            Flag to indicate if commit that generated this build
  *                      is dirty.
  * git_ahead            Distance (in commits) that commit that generated this
@@ -102,8 +104,9 @@ typedef struct image_header_t
     uint8_t version_major;
     uint8_t version_minor;
     uint8_t version_patch;
-    uint32_t vector_addr;
     uint16_t device_id;
+    uint8_t vector_size;
+    uintptr_t vector_addr;
     uint8_t git_dirty;
     uint8_t git_ahead;
     char git_sha[8];
