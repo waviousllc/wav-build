@@ -118,3 +118,25 @@ that include the header.
 ### Scripts
 This includes supporting scripts for patching image header, and parsing out
 raw header information (image header, GNU build ID) from compatible binaries.
+
+## Tools
+### Precommit
+pre-commit is a tool that simplifies the process of creating and sharing
+githooks for a development team. pre-commit offers an extensive set of plugins
+that can be used for various projects. The hooks (aka scripts) that will run
+prior to each commit are defined by `.pre-commit-config.yaml` file located in
+the root of this project. All software based projects at Wavious include
+`wav-build` as a project and thus use pre-commit.
+
+#### Installation
+pre-commit can be installed using pip `pip install pre-commit`
+install pre-commit for your project
+`pre-commit install <PATH_TO_WAV_BUILD>/.pre-commit-config.yaml` where
+`<PATH_TO_WAV_BUILD>` is the full path to this project (remember that this
+project is a submodule for all Wavious software projects).
+
+#### Execution
+pre-commit runs whenever `git commit` is executed. However, it can be run
+manually via `pre-commit run --all-files`.
+
+[Documentation](https://pre-commit.com)
