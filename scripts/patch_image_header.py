@@ -15,18 +15,20 @@ import os
 import struct
 import subprocess
 
+
 def process_binary_payload(bin_filename):
     """
     Patch crc & data_size fields of image_hdr_t in place in binary
 
     Raise exception if binary is not a supported type
     """
-    IMAGE_HDR_SIZE_BYTES = 32
+    IMAGE_HDR_SIZE_FIXED_BYTES = 19  # Fixed starting 19 bytes
+    IMAGE_HDR_SIZE_GIT_BYTES = 10  # Trailing 10 bytes
     IMAGE_HDR_MAGIC = 0xC0FE
     IMAGE_HDR_VERSION = 1
 
     with open(bin_filename, "rb") as f:
-        image_hdr = f.read(IMAGE_HDR_SIZE_BYTES)
+        image_hdr = f.read(IMAGE_HDR_SIZE_FIXED_BYTES)
         data = f.read()
 
     image_magic, image_hdr_version = struct.unpack("<HH", image_hdr[0:4])
@@ -45,8 +47,20 @@ def process_binary_payload(bin_filename):
             )
         )
 
+    # Determine full header size based on vector_size
+    vector_size = image_hdr[-1]
+
+    if vector_size != 0x4 and vector_size != 0x8:
+        raise Exception(
+            "Vector Size is incorrect. Expected 0x4 or 0x8. Got 0x{:02x}".format(
+                vector_size
+            )
+        )
+
+    # Chop off data based on vector_size + fixed git header size
+    data = data[vector_size + IMAGE_HDR_SIZE_GIT_BYTES : :]
     data_size = len(data)
-    crc32 = binascii.crc32(data) & 0xffffffff
+    crc32 = binascii.crc32(data) & 0xFFFFFFFF
     return data_size, crc32
 
 
@@ -64,13 +78,15 @@ def main(elf_filename, prefix):
         OBJCOPY = "{}-{}".format(prefix, OBJCOPY)
         GDB = "{}-{}".format(prefix, GDB)
 
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, "w") as devnull:
 
         # Create binary file
-        subprocess.call([OBJCOPY, elf_filename, "-O", "binary", TMP_FILENAME],
-                        shell=False,
-                        stderr=devnull,
-                        stdout=devnull)
+        subprocess.call(
+            [OBJCOPY, elf_filename, "-O", "binary", TMP_FILENAME],
+            shell=False,
+            stderr=devnull,
+            stdout=devnull,
+        )
 
         # Process file
         data_size, crc32 = process_binary_payload(TMP_FILENAME)
@@ -79,24 +95,27 @@ def main(elf_filename, prefix):
         os.remove(TMP_FILENAME)
 
         # Patch elf file
-        subprocess.call([
-                            GDB,
-                            "--write",
-                            "-ex",
-                            "set image_hdr.data_size={}".format(data_size),
-                            "-ex",
-                            "set image_hdr.crc={}".format(crc32),
-                            "-ex",
-                            "q",
-                            elf_filename
-                        ],
-                        stderr=devnull,
-                        stdout=devnull)
+        subprocess.call(
+            [
+                GDB,
+                "--write",
+                "-ex",
+                "set image_hdr.data_size={}".format(data_size),
+                "-ex",
+                "set image_hdr.crc={}".format(crc32),
+                "-ex",
+                "q",
+                elf_filename,
+            ],
+            stderr=devnull,
+            stdout=devnull,
+        )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Patches Wavious Image Header in ELF file", formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Patches Wavious Image Header in ELF file",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("elf", action="store")
     parser.add_argument("--prefix", action="store")
