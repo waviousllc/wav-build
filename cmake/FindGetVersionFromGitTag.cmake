@@ -81,13 +81,21 @@ if (GIT_FOUND AND VERSION_UPDATE_FROM_GIT)
     string(REGEX MATCHALL "-.*$|[0-9]+" PARTIAL_VERSION_LIST
         ${VERSION_STRING})
 
-    # Set the version numbers
-    list(GET PARTIAL_VERSION_LIST
-        0 VERSION_MAJOR)
-    list(GET PARTIAL_VERSION_LIST
-        1 VERSION_MINOR)
-    list(GET PARTIAL_VERSION_LIST
-        2 VERSION_PATCH)
+    list(LENGTH PARTIAL_VERSION_LIST VERSION_LIST_LENGTH)
+
+    if (${VERSION_LIST_LENGTH} GREATER 2)
+        # Set the version numbers
+        list(GET PARTIAL_VERSION_LIST
+            0 VERSION_MAJOR)
+        list(GET PARTIAL_VERSION_LIST
+            1 VERSION_MINOR)
+        list(GET PARTIAL_VERSION_LIST
+            2 VERSION_PATCH)
+    else()
+        set(VERSION_MAJOR 0)
+        set(VERSION_MINOR 0)
+        set(VERSION_PATCH 0)
+    endif()
 
     # Unset the list
     unset(PARTIAL_VERSION_LIST)
